@@ -1,0 +1,15 @@
+# MATLAB
+*.asv
+*.m~
+*.mex*
+slprj/
+codegen/
+*.mat
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*.log
+
+# Optional: if you do NOT want to version generated seq files, uncomment:
+# seq/*.seq
