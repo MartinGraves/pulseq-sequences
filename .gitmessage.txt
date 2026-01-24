@@ -1,0 +1,12 @@
+Short summary (imperative, <= 60 chars)
+
+What changed?
+-
+
+Why?
+-
+
+Notes / links / parameters:
+- TE/TR:
+- FOV/res:
+- RF spoiling:
