@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Pulseq: Sync (pull)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\tools\\sync.ps1",
+                "pull"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Pulseq: Publish (commit + push)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\tools\\sync.ps1",
+                "publish"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Pulseq: Git status",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\tools\\sync.ps1",
+                "status"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

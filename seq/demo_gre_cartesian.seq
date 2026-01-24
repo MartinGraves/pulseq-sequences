@@ -665,7 +665,7 @@ TotalDuration 2.15936
 # Field 'use' is the initial of: 
 #   excitation refocusing inversion saturation preparation other undefined
 [RF]
-1      54.8586 1 2 0 1500 100 0 0 0 0 u
+1      54.8586 1 2 0 1500 100 0 0 0 0 e
 
 # Format of trapezoid gradients:
 # id amplitude rise flat fall delay
@@ -3839,4 +3839,4 @@ num_samples 3000
 # preceding [SIGNATURE] BELONGS to the signature (and needs to be sripped away
 # for recalculating/verification)
 Type md5
-Hash 2ea71b7170c76a5ea679c7cd8953b003
+Hash 33b70939848db1266ab85b12334e0dd6
