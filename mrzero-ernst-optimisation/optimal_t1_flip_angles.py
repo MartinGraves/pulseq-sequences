@@ -226,9 +226,9 @@ def monte_carlo_validation(
             dot = noisy @ dictionary.T
             fitted_m0 = dot / dictionary_norm[None, :]
             residual = (
-                np.sum(noisy.square(), axis=1)[:, None]
+                np.sum(np.square(noisy), axis=1)[:, None]
                 - 2.0 * fitted_m0 * dot
-                + fitted_m0.square() * dictionary_norm[None, :]
+                + np.square(fitted_m0) * dictionary_norm[None, :]
             )
             estimate = fit_t1[np.argmin(residual, axis=1)]
             records.append(
