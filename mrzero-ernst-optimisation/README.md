@@ -25,6 +25,8 @@ then robustness to tissue variation and B1+ scaling.
 - `ernst_optimisation.py` - differentiable signal model and core experiments.
 - `mrzero_validation.py` - independent MRzero/Pulseq simulation.
 - `test_ernst_optimisation.py` - analytical and autograd checks.
+- `optimal_t1_flip_angles.py` - robust minimal flip-angle protocol design.
+- `optimal_rf_phase_increment.py` - EPG optimisation of quadratic RF spoiling.
 - `requirements.txt` - Python dependencies.
 - `run_all.ps1` - Windows setup and run helper.
 
@@ -95,6 +97,25 @@ time. The smallest protocol within 5% of the best design is selected.
 Outputs are written to `results/t1_design/`, including optimised angles,
 precision curves, a B1/T1 precision heatmap, Monte Carlo validation, CSV data,
 and a JSON summary.
+
+## Optimise quadratic RF spoiling
+
+After selecting the flip angles, optimise the quadratic RF phase increment for
+T1-mapping bias:
+
+```powershell
+C:\\PythonEnvs\\mrzero-ernst\\Scripts\\python.exe optimal_rf_phase_increment.py
+```
+
+The EPG sweep covers T1 = 500--2500 ms, T2 = 40--120 ms, and B1 = 0.8--1.2
+using the selected 3.284 and 20.075 degree flip angles. It compares standard
+increments (50, 84, 115.4, 117, and 169 degrees), writes CSV/JSON results, and
+creates seed-sweep and T1-bias figures in `results/rf_spoiling/`.
+
+The selected increment is specific to the simulated sequence. The default EPG
+model assumes one full coherence-order spoiler per TR and no diffusion; use the
+exact RF pulse, gradient spoiler, diffusion model, and acquisition length before
+transferring the value to a scanner protocol.
 
 ## Interpretation
 
