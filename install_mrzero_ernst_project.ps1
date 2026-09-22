@@ -33,8 +33,8 @@ foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$branch = "codex/mrzero-ernst-mvp"
-$baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$branch/mrzero-ernst-optimisation"
+$projectCommit = "4deedc29eb30e3d4817120cbf7bffff68c1d6fc4"
+$baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
     "requirements.txt",
