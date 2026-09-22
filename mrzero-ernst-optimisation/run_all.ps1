@@ -1,5 +1,6 @@
 param(
-    [switch]$SkipMrzero,\n    [switch]$SkipT1Design,
+    [switch]$SkipMrzero,
+    [switch]$SkipT1Design,
     [string]$EnvironmentPath = "C:\PythonEnvs\mrzero-ernst"
 )
 
