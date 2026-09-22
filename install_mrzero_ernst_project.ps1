@@ -12,25 +12,31 @@ Write-Host "Project:     $TargetRoot"
 Write-Host "Environment: $EnvironmentPath"
 Write-Host ""
 
-$python312 = & py -0p 2>$null | Select-String -SimpleMatch "-3.12"
-if (-not $python312) {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw "Python 3.12 is not installed and Windows Package Manager (winget) is unavailable. Install 64-bit Python 3.12 from python.org, then rerun this installer."
-    }
-
-    Write-Host "Python 3.12 is not installed. Installing it now..."
-    & winget install --exact --id Python.Python.3.12 --scope user --accept-source-agreements --accept-package-agreements
-    if ($LASTEXITCODE -ne 0) {
-        throw "Automatic Python 3.12 installation failed."
-    }
-
-    $python312 = & py -0p 2>$null | Select-String -SimpleMatch "-3.12"
-    if (-not $python312) {
-        throw "Python 3.12 was installed but is not yet visible to py.exe. Close PowerShell, open it again, and rerun this installer."
+$pyList = (& py -0p 2>$null | Out-String)
+$pythonSelector = $null
+foreach ($version in @("3.14", "3.13", "3.12")) {
+    if ($pyList -match [regex]::Escape($version)) {
+        $pythonSelector = "-$version"
+        break
     }
 }
 
-$versionText = & py -3.12 --version 2>$null
+if (-not $pythonSelector) {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw "No compatible Python runtime was found and Windows Package Manager is unavailable. Install 64-bit Python 3.13 from python.org, then rerun this installer."
+    }
+
+    Write-Host "No compatible Python runtime was found. Installing Python 3.13..."
+    & winget install --exact --id Python.Python.3.13 --scope user --accept-source-agreements --accept-package-agreements
+    $pyList = (& py -0p 2>$null | Out-String)
+    if ($pyList -match [regex]::Escape("3.13")) {
+        $pythonSelector = "-3.13"
+    } else {
+        throw "Python was installed but is not yet visible to py.exe. Close PowerShell, open it again, and rerun this installer."
+    }
+}
+
+$versionText = & py $pythonSelector --version 2>$null
 Write-Host "Using $versionText"
 
 $projectDirectories = @(
@@ -48,7 +54,7 @@ foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$projectCommit = "4a10d5aa69eff002fba3d522fa666d5569b25805"
+$projectCommit = "51c76828009f6246f9c527edca1df49a4980dacd"
 $baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
@@ -71,8 +77,8 @@ Set-Location $TargetRoot
 
 $venvPython = Join-Path $EnvironmentPath "Scripts\python.exe"
 if (-not (Test-Path $venvPython)) {
-    Write-Host "Creating Python 3.12 virtual environment at $EnvironmentPath..."
-    & py -3.12 -m venv $EnvironmentPath
+    Write-Host "Creating Python virtual environment at $EnvironmentPath..."
+    & py $pythonSelector -m venv $EnvironmentPath
     if ($LASTEXITCODE -ne 0) {
         throw "Virtual-environment creation failed."
     }
