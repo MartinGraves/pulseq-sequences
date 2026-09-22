@@ -213,7 +213,7 @@ def monte_carlo_validation(
         dictionary = (1.0 - e1_fit) * np.sin(effective) / (
             1.0 - e1_fit * np.cos(effective)
         )
-        dictionary_norm = np.sum(dictionary.square(), axis=1)
+        dictionary_norm = np.sum(np.square(dictionary), axis=1)
 
         for t1_true in truth_t1:
             e1 = np.exp(-cfg.tr_s / t1_true)
