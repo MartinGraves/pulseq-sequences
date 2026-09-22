@@ -100,27 +100,56 @@ Write-Host "Recording installed package versions..."
 & $venvPython -m pip freeze |
     Set-Content -Path (Join-Path $TargetRoot "logs\installed_packages.txt") -Encoding UTF8
 
-Write-Host "Running scientific regression tests..."
-& $venvPython -m unittest -v test_ernst_optimisation.py 2>&1 |
-    Tee-Object -FilePath (Join-Path $TargetRoot "logs\tests.log")
-if ($LASTEXITCODE -ne 0) {
-    throw "Regression tests failed. See logs\tests.log."
+function Invoke-PythonLogged {
+    param(
+        [string[]]$PythonArguments,
+        [string]$LogPath,
+        [string]$FailureMessage
+    )
+
+    $stdoutPath = "$LogPath.stdout.tmp"
+    $stderrPath = "$LogPath.stderr.tmp"
+    Remove-Item $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
+
+    $process = Start-Process -FilePath $venvPython `
+        -ArgumentList $PythonArguments `
+        -NoNewWindow -Wait -PassThru `
+        -RedirectStandardOutput $stdoutPath `
+        -RedirectStandardError $stderrPath
+
+    $combinedOutput = @()
+    if (Test-Path $stdoutPath) {
+        $combinedOutput += Get-Content $stdoutPath
+    }
+    if (Test-Path $stderrPath) {
+        $combinedOutput += Get-Content $stderrPath
+    }
+    $combinedOutput | Tee-Object -FilePath $LogPath
+    Remove-Item $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
+
+    if ($process.ExitCode -ne 0) {
+        throw "$FailureMessage See $LogPath."
+    }
 }
 
+Write-Host "Running scientific regression tests..."
+Invoke-PythonLogged `
+    -PythonArguments @("-m", "unittest", "-v", "test_ernst_optimisation.py") `
+    -LogPath (Join-Path $TargetRoot "logs\tests.log") `
+    -FailureMessage "Regression tests failed."
+
 Write-Host "Running differentiable Ernst-angle and contrast experiments..."
-& $venvPython ernst_optimisation.py 2>&1 |
-    Tee-Object -FilePath (Join-Path $TargetRoot "logs\ernst_optimisation.log")
-if ($LASTEXITCODE -ne 0) {
-    throw "Ernst-angle experiment failed. See logs\ernst_optimisation.log."
-}
+Invoke-PythonLogged `
+    -PythonArguments @("ernst_optimisation.py") `
+    -LogPath (Join-Path $TargetRoot "logs\ernst_optimisation.log") `
+    -FailureMessage "Ernst-angle experiment failed."
 
 if (-not $SkipMrzeroRun) {
     Write-Host "Running MRzero/Pulseq validation..."
-    & $venvPython mrzero_validation.py 2>&1 |
-        Tee-Object -FilePath (Join-Path $TargetRoot "logs\mrzero_validation.log")
-    if ($LASTEXITCODE -ne 0) {
-        throw "MRzero validation failed. See logs\mrzero_validation.log."
-    }
+    Invoke-PythonLogged `
+        -PythonArguments @("mrzero_validation.py") `
+        -LogPath (Join-Path $TargetRoot "logs\mrzero_validation.log") `
+        -FailureMessage "MRzero validation failed."
 }
 
 Write-Host ""
