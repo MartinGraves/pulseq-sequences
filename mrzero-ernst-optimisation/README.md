@@ -80,6 +80,22 @@ The MRzero simulation is intentionally separate from the differentiable
 signal-level optimiser. This makes the optimisation fast and transparent while
 retaining an independent sequence-level validation.
 
+## Optimise a minimal brain T1 protocol
+
+```powershell
+C:\PythonEnvs\mrzero-ernst\Scripts\python.exe optimal_t1_flip_angles.py
+```
+
+The optimiser compares protocols containing two to six unique flip angles over
+T1 = 500--2500 ms and B1 = 0.8--1.2 at TR = 20 ms. It minimises the worst-case
+Cramer-Rao bound for T1 with M0 as a nuisance parameter. Fisher information is
+normalised by the number of angles so designs are compared at fixed total scan
+time. The smallest protocol within 5% of the best design is selected.
+
+Outputs are written to `results/t1_design/`, including optimised angles,
+precision curves, a B1/T1 precision heatmap, Monte Carlo validation, CSV data,
+and a JSON summary.
+
 ## Interpretation
 
 For the first experiment, success means that the optimised angle agrees with
