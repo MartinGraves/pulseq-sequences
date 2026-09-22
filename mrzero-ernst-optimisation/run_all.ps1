@@ -12,8 +12,20 @@ if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
 
 $python = Join-Path $EnvironmentPath "Scripts\python.exe"
 if (-not (Test-Path $python)) {
+    $pyList = (& py -0p 2>$null | Out-String)
+    $pythonSelector = $null
+    foreach ($version in @("3.14", "3.13", "3.12")) {
+        if ($pyList -match [regex]::Escape($version)) {
+            $pythonSelector = "-$version"
+            break
+        }
+    }
+    if (-not $pythonSelector) {
+        throw "No compatible Python runtime was found. Python 3.12, 3.13, or 3.14 is required."
+    }
+
     New-Item -ItemType Directory -Path (Split-Path $EnvironmentPath) -Force | Out-Null
-    py -3.12 -m venv $EnvironmentPath
+    & py $pythonSelector -m venv $EnvironmentPath
     if ($LASTEXITCODE -ne 0) {
         throw "Could not create the virtual environment at $EnvironmentPath."
     }
