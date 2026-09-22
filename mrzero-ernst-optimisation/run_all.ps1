@@ -1,5 +1,5 @@
 param(
-    [switch]$SkipMrzero,
+    [switch]$SkipMrzero,\n    [switch]$SkipT1Design,
     [string]$EnvironmentPath = "C:\PythonEnvs\mrzero-ernst"
 )
 
@@ -34,11 +34,15 @@ if (-not (Test-Path $python)) {
 Set-Location $projectRoot
 & $python -m pip install --upgrade pip
 & $python -m pip install -r (Join-Path $projectRoot "requirements.txt")
-& $python -m unittest -v test_ernst_optimisation.py
+& $python -m unittest discover -v
 & $python ernst_optimisation.py
 
 if (-not $SkipMrzero) {
     & $python mrzero_validation.py
+}
+
+if (-not $SkipT1Design) {
+    & $python optimal_t1_flip_angles.py
 }
 
 Write-Host ""
