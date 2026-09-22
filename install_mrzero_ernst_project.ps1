@@ -54,7 +54,7 @@ foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$projectCommit = "0a833705e8c20c19e39d078479e52767a42a34f3"
+$projectCommit = "13c7f97c757b127f30f1de5c24f02972230d9982"
 $baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
@@ -62,6 +62,10 @@ $projectFiles = @(
     "ernst_optimisation.py",
     "mrzero_validation.py",
     "test_ernst_optimisation.py",
+    "optimal_t1_flip_angles.py",
+    "test_optimal_t1_flip_angles.py",
+    "optimal_rf_phase_increment.py",
+    "test_optimal_rf_phase_increment.py",
     "run_all.ps1"
 )
 
@@ -157,6 +161,12 @@ Invoke-PythonLogged `
     -PythonArguments @("optimal_t1_flip_angles.py") `
     -LogPath (Join-Path $TargetRoot "logs\optimal_t1_flip_angles.log") `
     -FailureMessage "T1 flip-angle optimisation failed."
+
+Write-Host "Optimising quadratic RF phase increment..."
+Invoke-PythonLogged `
+    -PythonArguments @("optimal_rf_phase_increment.py") `
+    -LogPath (Join-Path $TargetRoot "logs\\optimal_rf_phase_increment.log") `
+    -FailureMessage "RF phase-increment optimisation failed."
 
 Write-Host ""
 Write-Host "Installation and validation complete."
