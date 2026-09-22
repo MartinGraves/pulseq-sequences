@@ -1,5 +1,6 @@
 param(
-    [string]$TargetRoot = "A:\SoftwareDev\MRzero\ernst-angle-project",
+    [string]$TargetRoot = "F:\Programming\mrzero-ernst-optimisation",
+    [string]$EnvironmentPath = "C:\PythonEnvs\mrzero-ernst",
     [switch]$SkipMrzeroRun
 )
 
@@ -7,7 +8,8 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 Write-Host "MRzero Ernst-angle project installer"
-Write-Host "Target: $TargetRoot"
+Write-Host "Project:     $TargetRoot"
+Write-Host "Environment: $EnvironmentPath"
 Write-Host ""
 
 if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
@@ -21,19 +23,21 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "Using $versionText"
 
 $projectDirectories = @(
+    "F:\Programming",
     $TargetRoot,
     (Join-Path $TargetRoot "results"),
     (Join-Path $TargetRoot "results\mrzero"),
     (Join-Path $TargetRoot "figures"),
     (Join-Path $TargetRoot "data"),
-    (Join-Path $TargetRoot "logs")
+    (Join-Path $TargetRoot "logs"),
+    "C:\PythonEnvs"
 )
 
 foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$projectCommit = "4deedc29eb30e3d4817120cbf7bffff68c1d6fc4"
+$projectCommit = "4a10d5aa69eff002fba3d522fa666d5569b25805"
 $baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
@@ -54,10 +58,10 @@ foreach ($fileName in $projectFiles) {
 
 Set-Location $TargetRoot
 
-$venvPython = Join-Path $TargetRoot ".venv\Scripts\python.exe"
+$venvPython = Join-Path $EnvironmentPath "Scripts\python.exe"
 if (-not (Test-Path $venvPython)) {
-    Write-Host "Creating Python 3.12 virtual environment..."
-    & py -3.12 -m venv (Join-Path $TargetRoot ".venv")
+    Write-Host "Creating Python 3.12 virtual environment at $EnvironmentPath..."
+    & py -3.12 -m venv $EnvironmentPath
     if ($LASTEXITCODE -ne 0) {
         throw "Virtual-environment creation failed."
     }
@@ -104,7 +108,8 @@ if (-not $SkipMrzeroRun) {
 
 Write-Host ""
 Write-Host "Installation and validation complete."
-Write-Host "Project: $TargetRoot"
-Write-Host "Python:  $venvPython"
-Write-Host "Results: $(Join-Path $TargetRoot 'results')"
-Write-Host "Logs:    $(Join-Path $TargetRoot 'logs')"
+Write-Host "Project:     $TargetRoot"
+Write-Host "Environment: $EnvironmentPath"
+Write-Host "Python:      $venvPython"
+Write-Host "Results:     $(Join-Path $TargetRoot 'results')"
+Write-Host "Logs:        $(Join-Path $TargetRoot 'logs')"
