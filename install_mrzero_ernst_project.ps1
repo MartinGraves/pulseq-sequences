@@ -12,14 +12,25 @@ Write-Host "Project:     $TargetRoot"
 Write-Host "Environment: $EnvironmentPath"
 Write-Host ""
 
-if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
-    throw "The Windows Python launcher (py.exe) was not found. Install 64-bit Python 3.12, then run this installer again."
+$python312 = & py -0p 2>$null | Select-String -SimpleMatch "-3.12"
+if (-not $python312) {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw "Python 3.12 is not installed and Windows Package Manager (winget) is unavailable. Install 64-bit Python 3.12 from python.org, then rerun this installer."
+    }
+
+    Write-Host "Python 3.12 is not installed. Installing it now..."
+    & winget install --exact --id Python.Python.3.12 --scope user --accept-source-agreements --accept-package-agreements
+    if ($LASTEXITCODE -ne 0) {
+        throw "Automatic Python 3.12 installation failed."
+    }
+
+    $python312 = & py -0p 2>$null | Select-String -SimpleMatch "-3.12"
+    if (-not $python312) {
+        throw "Python 3.12 was installed but is not yet visible to py.exe. Close PowerShell, open it again, and rerun this installer."
+    }
 }
 
-$versionText = & py -3.12 --version 2>&1
-if ($LASTEXITCODE -ne 0) {
-    throw "Python 3.12 is not available through py.exe. Install 64-bit Python 3.12, then run this installer again."
-}
+$versionText = & py -3.12 --version 2>$null
 Write-Host "Using $versionText"
 
 $projectDirectories = @(
