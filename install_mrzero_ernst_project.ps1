@@ -54,7 +54,7 @@ foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$projectCommit = "51c76828009f6246f9c527edca1df49a4980dacd"
+$projectCommit = "25e88391dfaee1d00536bac486112117db9a6981"
 $baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
@@ -134,7 +134,7 @@ function Invoke-PythonLogged {
 
 Write-Host "Running scientific regression tests..."
 Invoke-PythonLogged `
-    -PythonArguments @("-m", "unittest", "-v", "test_ernst_optimisation.py") `
+    -PythonArguments @("-m", "unittest", "discover", "-v") `
     -LogPath (Join-Path $TargetRoot "logs\tests.log") `
     -FailureMessage "Regression tests failed."
 
@@ -151,6 +151,12 @@ if (-not $SkipMrzeroRun) {
         -LogPath (Join-Path $TargetRoot "logs\mrzero_validation.log") `
         -FailureMessage "MRzero validation failed."
 }
+
+Write-Host "Optimising minimal brain T1 flip-angle protocols..."
+Invoke-PythonLogged `
+    -PythonArguments @("optimal_t1_flip_angles.py") `
+    -LogPath (Join-Path $TargetRoot "logs\optimal_t1_flip_angles.log") `
+    -FailureMessage "T1 flip-angle optimisation failed."
 
 Write-Host ""
 Write-Host "Installation and validation complete."
