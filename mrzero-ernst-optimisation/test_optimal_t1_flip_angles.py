@@ -39,7 +39,9 @@ class OptimalT1FlipAngleTests(unittest.TestCase):
             )[0]
             automatic = gradient * t1
             self.assertAlmostEqual(
-                float(analytic[0, 0, index]), float(automatic), places=10
+                float(analytic[0, 0, index].detach()),
+                float(automatic.detach()),
+                places=10,
             )
 
     def test_two_angle_crlb_is_finite(self) -> None:
