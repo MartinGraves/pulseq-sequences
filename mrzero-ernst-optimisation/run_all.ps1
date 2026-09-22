@@ -1,6 +1,7 @@
 param(
     [switch]$SkipMrzero,
     [switch]$SkipT1Design,
+    [switch]$SkipRfPhaseDesign,
     [string]$EnvironmentPath = "C:\PythonEnvs\mrzero-ernst"
 )
 
@@ -44,6 +45,10 @@ if (-not $SkipMrzero) {
 
 if (-not $SkipT1Design) {
     & $python optimal_t1_flip_angles.py
+}
+
+if (-not $SkipRfPhaseDesign) {
+    & $python optimal_rf_phase_increment.py
 }
 
 Write-Host ""
