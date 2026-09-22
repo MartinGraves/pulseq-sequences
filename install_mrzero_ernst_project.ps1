@@ -54,7 +54,7 @@ foreach ($directory in $projectDirectories) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 
-$projectCommit = "25e88391dfaee1d00536bac486112117db9a6981"
+$projectCommit = "0a833705e8c20c19e39d078479e52767a42a34f3"
 $baseUrl = "https://raw.githubusercontent.com/MartinGraves/pulseq-sequences/$projectCommit/mrzero-ernst-optimisation"
 $projectFiles = @(
     "README.md",
